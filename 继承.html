@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /******************************************1、原型式继承*******************************************/
+
+        //正常
+
+        function ParentClass(){
+            this.pValue = true;
+        }
+        ParentClass.prototype.getPValue = function(){
+            console.log('原型式继承——父类属性：' + this.pValue);
+        }
+        function ChildClass() {
+            this.cValue = true;
+        }
+        ChildClass.prototype = new ParentClass();
+
+        // //使用
+        var childObj = new ChildClass();
+
+        console.log('原型式继承子类——实例子类属性值：' + childObj.cValue);
+        console.log('原型式继承子类——实例父类属性值：' + childObj.pValue);
+        console.log('原型式继承子类——实例父类方法：' );childObj.getPValue();
+
+                        // //尝试传参：@@@@@@@@@@@@@@@缺点二：由于子类实现的继承是靠其原型prototype对父类进行实例化实现的，因此在创建父类的时候，是无法向父类传递参数的。因而在实例化父类的时候也无法对父类构造函数内的属性进行初始化 TODO:这个缺点不懂
+
+                        function ParentClass_0(pval){
+                            this.pValue = pval;
+                            this.pobj = {  //引用属性
+                                a: 'aaa'
+                            }
+                        }
+                        ParentClass_0.prototype.getPValue = function(){
+                            console.log('原型式继承——父类原型对象上的方法：' + this.pValue);
+                        }
+                        function ChildClass_0(cval) {
+                            this.cValue = cval;
+                        }
+                        ChildClass_0.prototype = new ParentClass_0('父类属性值');//父类属性值
+
+                        //使用
+                        var childObj_0 = new ChildClass_0('子类属性值');//子类属性值
+                        var childObj1_0 = new ChildClass_0('父类属性值第二次');
+
+                        childObj_0.pobj.a = 'bbbb';//！@@@@@@@@@@@@@@@缺点：影响了childObj1_0.pobj.a
+
+                        console.log('原型式继承子类——实例子类属性值：' + childObj_0.cValue);//可以取到子类属性
+                        console.log('原型式继承子类——实例父类属性值：' + childObj_0.pValue);//可以取到父类属性
+                        childObj_0.getPValue();//可以取到父类原型对象上的方法
+                        // console.log(childObj_0.pobj.a);
+                        console.log(childObj_0);
+
+                        console.log('原型式继承子类——实例子类属性值：' + childObj1_0.cValue);//可以取到子类属性
+                        console.log('原型式继承子类——实例父类属性值：' + childObj1_0.pValue);//可以取到父类属性
+                        childObj1_0.getPValue();//可以取到父类原型对象上的方法
+                        // console.log(childObj1_0.pobj.a);//！被影响了！！！
+                        console.log(childObj1_0);//！被影响了！！！
+
+
+console.log('*************************************');
+
+
+
+
+
+        /******************************************2、构造函数式继承*******************************************/
+
+        //正常
+
+        function ParentClass_1(pval){
+            this.pValue = pval;
+            this.pobj = {  //引用属性
+                a: 'aaa'
+            }
+        }
+        ParentClass_1.prototype.getPValue = function(){
+            console.log('构造函数式继承——父类原型对象上的方法：' + this.pValue);
+        }
+        function ChildClass_1(pval,cval) {
+            ParentClass_1.call(this, pval);
+            this.cValue = cval;
+        }
+
+        // //使用
+        var childObj_1 = new ChildClass_1('父类属性值','子类属性值');//子类属性值
+        
+        console.log('构造函数式继承子类——实例子类属性值：' + childObj_1.cValue);//可以取到子类属性
+        console.log('构造函数式继承子类——实例父类属性值：' + childObj_1.pValue);//可以取到父类属性
+        // childObj_1.getPValue();//报错  @@@@@@@@@@@@@@缺点一：无法取到父类原型对象上的方法
+
+                        //改写父类构造函数
+                        function ParentClass_1_1(pval){
+                            this.pValue = pval;
+                            this.getPValue = function() { //从父类原型对象上把方法挪进构造函数里,@@@@@@@@@@@@@@缺点二：每个实例都独有一份TODO:不懂，原型式继承的时候每个实例里的getPValue也独一份啊
+                                console.log(this.pValue);
+                            }
+                        }
+
+                        function ChildClass_1_1(cval) {
+                            ParentClass_1_1.call(this, cval);
+                        }
+                        
+                        //使用
+                        var childObj_1_1 = new ChildClass_1_1('子类属性值');//子类属性值
+                        var childObj_1_2 = new ChildClass_1_1('子类属性值第二次');//子类属性值
+
+
+                        childObj_1_1.getPValue = function(){
+                            alert("改写了这个方法");
+                        };
+                        childObj_1_1.getPValue();//弹出alert
+                        childObj_1_2.getPValue();//打印“子类属性值第二次”
+                        
+
+                        console.log('*************************************');
+
+
+        /******************************************3、组合继承*******************************************/
+        
+        function ParentClass_2(pval){
+            this.pValue = pval;
+        }
+        ParentClass_2.prototype.getPValue = function(){
+            console.log('组合继承——父类属性：' + this.pValue);
+        }
+        function ChildClass_2(pval, cval) {
+            ParentClass_2.call(this,pval)
+            this.cValue = cval;
+        }
+        ChildClass_2.prototype = new ParentClass_2('父类属性值');
+
+        //使用
+        var childObj_2 = new ChildClass_2('父类属性值', '子类属性值');
+
+        console.log('组合继承——实例子类属性值：' + childObj_2.cValue);
+        console.log('组合继承——实例父类属性值：' + childObj_2.pValue);
+        console.log('组合继承——实例父类方法：' );childObj_2.getPValue();
+    
+        console.log('*************************************');
+
+        /******************************************4、原型式继承*******************************************/
+        function inheritObject(obj){ //继承方式6的部分一
+            function F(){}
+            F.prototype = obj;
+
+            return new F();
+        }
+
+
+        //使用
+        var ParentObj = {
+            id : '1',
+            likeBook : ['数学', '语文']
+        }
+
+        var newBook = inheritObject(ParentObj);
+        newBook.name = 'ajax book';
+        newBook.likeBook.push('react book');//这里添加，影响了otherBook
+
+        var otherBook = inheritObject(ParentObj);
+        otherBook.name = 'canvas book';
+        otherBook.likeBook.push('node book');//这里添加，又影响了newBook
+
+        // console.log(newBook,otherBook);
+        console.log(newBook.likeBook);
+        console.log(otherBook.likeBook);//@@@@@@@@@@@@@@@缺点：存在子类实例共享的情况。
+
+console.log('*************************************');
+        
+
+        /******************************************5、寄生式继承*******************************************/
+        function ChildClass_3 (){
+            var o = injectObj(ParentObj);//对原型式继承的二次封装
+            o.getBooks = function(name){//加拓展
+                console.log(name)
+            }
+        }
+
+
+        /******************************************6、寄生组合式继承*******************************************/
+
+        function inheritProto(ChildClass_4,ParentClass_4){//部分二：特殊的寄生式继承
+            var p = inheritObject(ParentClass_4.prototype);//注意：处理的是父类原型对象。复制一份父类的原型副本到变量中
+            p.constructor = ChildClass_4;//为了修正因为重写子类的原型导致子类的constructor属性被修改
+            ChildClass_4.prototype = p;// 设置子类原型
+        }
+
+        function ParentClass_4(pval){
+            this.pValue = pval;
+        }
+        ParentClass_4.prototype.getPValue = function(){
+            console.log(this.pValue);
+        }
+        function ChildClass_4(pval, cval){
+            ParentClass_4.call(this, pval)//部分三：构造函数继承
+            this.cValue = cval;
+        }
+
+        inheritProto(ChildClass_4,ParentClass_4);
+
+        ChildClass_4.prototype.getCValue = function(){//子类原型对象上的方法
+            console.log(this.cValue);//拿到子类对象上的属性，打印子类对象上的属性值
+        }
+
+        var childObj_4 = new ChildClass_4('寄生式——父类属性值', '寄生式——子类属性值');
+        console.log(childObj_4);//可以拿到cValue,pValue
+        childObj_4.getCValue();//可以调用子类原型对象上的方法
+        childObj_4.getPValue();//可以调用父类原型对象上的方法
+    </script>
+</body>
+</html>
